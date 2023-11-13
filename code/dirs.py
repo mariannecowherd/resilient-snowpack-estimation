@@ -2,8 +2,11 @@
 import os
 
 ## define directories
-basedir = '/global/cfs/cdirs/m4099/fate-of-snotel/'
-projectdir = basedir + 'wrfdata/'
-snoteldir = basedir + 'snoteldata/'
-wrfdir = projectdir
-coorddir = projectdir + 'meta/meta_new/'
+## home directory
+basedir = '/global/cfs/cdirs/m4099/fate-of-snotel/resilient-snowpack-estimation/'
+## where the snotel data are stored
+snoteldir = '/global/cfs/cdirs/m4099/fate-of-snotel/snoteldata/'
+## downscaled GCM data
+wrfdir = '/global/cfs/cdirs/m4099/fate-of-snotel/wrfdata/'
+## downscaled GCM metadata
+coorddir = wrfdir + 'meta/meta_new/'
