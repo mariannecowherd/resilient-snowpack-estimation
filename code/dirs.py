@@ -3,7 +3,7 @@ import os
 
 ## define directories
 ## home directory
-basedir = '/global/cfs/cdirs/m4099/fate-of-snotel/resilient-snowpack-estimation/'
+basedir = '/global/cfs/cdirs/m4099/fate-of-snotel/fos-marianne/resilient-snowpack-estimation/'
 ## where the snotel data are stored
 snoteldir = '/global/cfs/cdirs/m4099/fate-of-snotel/snoteldata/'
 ## downscaled GCM data
