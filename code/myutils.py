@@ -182,6 +182,35 @@ def shift_to_dowy(doy):
     return dowy
 
 
+def relativize_snow_values(dataset):
+    """
+    Convert snow values in an xarray dataset to the relativized metric.
+
+    Args:
+        dataset (xarray.Dataset): Input dataset containing the snow values.
+
+    Returns:
+        xarray.Dataset: Relativized snow values dataset.
+    """
+    snow_values = dataset['swe'].values
+    relativized_values = np.zeros((snow_values.shape))
+    for i in range(9):
+        for j in range(121):
+            mydata = snow_values[i,j]
+
+            # mean and standard deviation across all time steps
+            mean_all = np.nanmean(mydata)
+            std_all = np.nanstd(mydata)
+
+         
+            relativized_values[i,j,:,:] = (mydata - mean_all) / std_all
+
+    relativized_dataset = dataset.copy()
+    relativized_dataset['relativized_swe'] = (('gcm', 'year', 'lat2d', 'lon2d'), relativized_values)
+
+    return relativized_dataset
+
+
 def get_coords(coorddir):
     """Get the coordinates of the WRF grid and snotels."""
     #coorddir = os.path.join(projectdir, "WRF-data", "wrf_coordinates")
