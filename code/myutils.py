@@ -1,6 +1,5 @@
 """!
 Common utility functions and shared constants/instantiations.
-This module contains common utility functions used throughout the package.
 """
 
 import datetime
@@ -15,6 +14,8 @@ import pandas as pd
 import xarray as xr
 from rich.console import Console
 
+from dirs import basedir, snoteldir, wrfdir 
+
 ##! Shared logging console object # noqa: E265
 console = Console()
 
@@ -24,78 +25,88 @@ MM_TO_IN = 0.03937008
 # Keep global variables available to all modules
 ## define directories
 # TODO remove these and use dirs.py instead
-basedir = '/glade/u/home/mcowherd/'
-projectdir = basedir + 'fos-data/'
-snoteldir = projectdir + 'snoteldata/'
-wrfdir = '/glade/campaign/uwyo/wyom0112/postprocess/'
-coorddir = wrfdir + 'WRF-data/wrf_coordinates/' 
-domain = "d02"
 
-def setup(
-    new_basedir: str = '/glade/u/home/mcowherd/',
-    new_domain: str = "d02",
-    new_projectdir: str = basedir + 'fos-data/',
-):
-    """! Set up the package environment.
-    Call setup(new_basedir, new_domain, new_projectdir) to set up the environment,
-    e.g. if you are on perlmutter call
-    ```
-    setup("/global/project/projectdirs/")
-    ```
-    """
-    global basedir, domain, projectdir
-    basedir = new_basedir
-    domain = new_domain
-    if new_projectdir is None:
-        new_projectdir = os.path.join(basedir, "fate-of-snotel")
-    projectdir = new_projectdir
+def read_merge(dir,domain,var,gcm,variant,date_start_hist, \
+                date_start_ssp,date_end_hist,date_end_ssp,exp,bc,calendar):
+    
+    dir_x = "%s/%s_%s_historical/postprocess/" %(dir,gcm,variant) + domain + "/"
+    
+    if bc == True:
+        dir_x = "%s/%s_%s_historical_bc/postprocess/" %(dir,gcm,variant) + domain + "/"
 
+    if calendar == '360_day':
+        date_end_hist = date_end_hist.split("-")
+        date_end_hist = "%s-%s-%s" %(date_end_hist[0],
+                                     date_end_hist[1],
+                                     int( int(date_end_hist[2]) + 0.0001 - 1) )
+        
+        date_end_ssp = date_end_ssp.split("-")
+        date_end_ssp = "%s-%s-%s" %(date_end_ssp[0],
+                                     date_end_ssp[1],
+                                     int( int(date_end_ssp[2]) + 0.0001 - 1) )
+        
+    print (calendar,date_end_hist,date_end_ssp)
+    var_wrf = wrfread_gcm("hist",gcm,variant,dir_x,var,domain,calendar)
+    var_hist = var_wrf.sel(day=slice(date_start_hist,date_end_hist))
+    dir_x = "%s/%s_%s_%s/postprocess/" %(dir,gcm,variant,exp) + domain + "/"
+    
+    print (gcm,variant,bc,exp)
+    
+    if bc == True:
+        dir_x = "%s/%s_%s_%s_bc/postprocess/" %(dir,gcm,variant,exp) + domain + "/"
 
+    var_wrf = wrfread_gcm(exp,gcm,variant,dir_x,var,domain,calendar)
+    var_ssp = var_wrf.sel(day=slice(date_start_ssp,date_end_ssp) )
+    
+    var_combine = xr.concat([var_hist,var_ssp],dim="day").rename({'day': 'time'})
+    
+    return (var_combine)
 
-def _wrfread_gcm(model, gcm, variant, dir, var, domain):
-    dir = os.path.join(dir, domain)
-    all_files = sorted(os.listdir(dir))
-    read_files = []
+print ("Functions loaded")
 
+#WRF tier 3 reader function
+def wrfread_gcm(model,gcm,variant,mydir,var,domain,calendar):
+
+    all_files = sorted(os.listdir(mydir))
+
+    in_files = []
     for ii in all_files:
-        if (
-            ii.startswith(var + ".")
-            and model in ii
-            # and gcm in ii
-            and variant in ii
-            and domain in ii
-        ):
+        if ii.startswith(var+".") and model in ii and gcm in ii \
+            and variant in ii and domain in ii:
             if domain in ii:
-                read_files.append(os.path.join(dir, str(ii)))
-    assert len(read_files) > 0, f"No matching files found in {dir}"
+                in_files.append(mydir+str(ii))
 
     del all_files
-    # nf = len(read_files)
 
-    data = xr.open_mfdataset(read_files, combine="by_coords")
+    nf  = len(in_files)
+
+    data = xr.open_mfdataset(in_files, combine="by_coords")
     var_read = data.variables[var]
-    # day = data.variables["day"].values
-    # nt = len(day)
+    day = data.variables["day"].values
+    nt = len(day)
 
-    # day1 = pd.to_datetime(str(int(day[0])), format='%Y-%m-%d')
-    # day2 = pd.to_datetime(str(int(day[nt-1])), format='%Y-%m-%d')
-    # dates = pd.date_range(day1,day2,freq="D")
+    day1 = str ( int ( day[0] ) )
+    val1 = day1[0:4]
+    val2 = int (day1[4:6])
+    val3 = int (day1[6:8])
+    day1_str = "%s-%s-%s" %(val1, "{:0=2d}".format(val2),
+                                        "{:0=2d}".format(val3) )
 
-    dates = []
-    for val in data["day"].data:
-        try:
-            dates.append(datetime.datetime.strptime(str(val)[0:-2], "%Y%m%d").date())
-        except ValueError:
-            dates.append(datetime.datetime(int(str(val)[0:4]), int(str(val)[4:6]), 28))
+    day2 = str ( int ( day[nt-1] ) )
+    val1 = day2[0:4]
+    val2 = int (day2[4:6])
+    val3 = int (day2[6:8])
+    day2_str = "%s-%s-%s" %(val1, "{:0=2d}".format(val2),
+                                        "{:0=2d}".format(val3) )
 
-    # Mask array setting leap years = True
-    # is_leap_day = (dates.month == 2) & (dates.day == 29)
-    # dates = dates[~is_leap_day]
+    time_array = xr.cftime_range(start=day1_str, end=day2_str,
+                              freq="1D", calendar=calendar)   
 
-    var_read = xr.DataArray(var_read, dims=["day", "lat2d", "lon2d"])
-    var_read["day"] = dates  # year doesn't matter here
+    var_read = xr.DataArray(var_read)
+    var_read['day'] = time_array    #year doesn't matter here
+    return (var_read)
 
-    return var_read
+      
 
 def screen_times_wrf(data, date_start, date_end):
     # Dimensions should be "day"
@@ -143,14 +154,14 @@ def get_peak_date_amt(data):
     )
     return metrics
 
-def _metaread(dir_meta,domain):
+def metaread(dir_meta,domain):
     file = "%swrfinput_%s" %(dir_meta,domain)
     data = xr.open_dataset(file, engine ='netcdf4')
     lat = data.variables["XLAT"]
     lon = data.variables["XLONG"]
     z = data.variables["HGT"]
     return (lat,lon,z,file)
-def _read_wrf_meta_data(dir_meta: str, domain: str):
+def read_wrf_meta_data(dir_meta: str, domain: str):
     """Read wrf meta data from nc4 files, and return lat, lon, height, and the filename"""
     infile = os.path.join(dir_meta, f"wrfinput_{domain}")
     data = xr.open_dataset(infile, engine="netcdf4")
@@ -255,7 +266,7 @@ def get_wrf_data(wrfdir, model, variant):
     model = "hist"
     modeldir = os.path.join(wrfdir, gcm , 'postprocess')
     print(modeldir)
-    var_wrf = _wrfread_gcm(model, gcm, variant, modeldir, var, domain)
+    var_wrf = wrfread_gcm(model, gcm, variant, modeldir, var, domain)
     var_wrf = screen_times_wrf(var_wrf, date_start_pd, date_end_pd)
 
     # future dates
@@ -263,7 +274,7 @@ def get_wrf_data(wrfdir, model, variant):
     gcm = mod_future
     modeldir = os.path.join(wrfdir, gcm ,'postprocess')
     model = "ssp370"
-    var_wrf_ssp370 = _wrfread_gcm(model, gcm, variant, modeldir, var, domain)
+    var_wrf_ssp370 = wrfread_gcm(model, gcm, variant, modeldir, var, domain)
     var_wrf_ssp370 = screen_times_wrf(var_wrf_ssp370, date_start_pd, date_end_pd)
 
     return dict(var_wrf=var_wrf, var_wrf_ssp370=var_wrf_ssp370)
