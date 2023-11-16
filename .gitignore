@@ -3,3 +3,4 @@ data/tmp/
 __pycache__/
 .ipynb_checkpoints/
 code/__pycache__/
+code/download_ucla.sh
