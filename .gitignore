@@ -4,3 +4,5 @@ __pycache__/
 .ipynb_checkpoints/
 code/__pycache__/
 code/download_ucla.sh
+*.pyc
+data/uclaSR/
