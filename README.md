@@ -1,15 +1,7 @@
 # resilient-snowpack-estimation code
 
 ## progress
-### fig1
 generate_tmpfiles
--> need to include UCLA prep code
-### fig2 
-### fig3 
-### fig4
-### ext_pattern
-## ext_prism 
-## ext_climatology
 environment.yml
 
 ## code
