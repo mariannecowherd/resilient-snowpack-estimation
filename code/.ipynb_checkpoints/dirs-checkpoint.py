@@ -10,3 +10,5 @@ snoteldir = '/global/cfs/cdirs/m4099/fate-of-snotel/snoteldata/'
 wrfdir = '/global/cfs/cdirs/m4099/fate-of-snotel/wrfdata/'
 ## downscaled GCM metadata
 coorddir = wrfdir + 'meta/meta_new/'
+## estimation model outputs
+outputsdir = '/global/cfs/cdirs/m4099/fate-of-snotel/wrfdata/umital/Fig4_results/'
