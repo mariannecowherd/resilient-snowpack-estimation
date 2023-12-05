@@ -12,27 +12,25 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from sklearn.metrics import mean_squared_error, r2_score
 from mpi4py import MPI
 
+from dirs import prepdir
+
 mpi_rank = MPI.COMM_WORLD.Get_rank()
 mpi_size = MPI.COMM_WORLD.Get_size()
 
 
 ### Specify paths to xarrays
-# input_folder_path = '/pscratch/sd/u/umital/fate-of-snotels/Preprocessed_data/'
-input_folder_path = '/global/cfs/cdirs/m4099/fate-of-snotel/wrfdata/umital/Preprocessed_data/'
 
-meta_data = xr.open_dataset(input_folder_path + 'wrfinput_d02')
-masks     = xr.open_dataset(input_folder_path + 'basin_masks_filtered.nc')
-sweBC     = xr.open_dataarray(input_folder_path + 'snowmaxBC.nc')
+meta_data = xr.open_dataset(prepdir + 'wrfinput_d02')
+masks     = xr.open_dataset(prepdir + 'basin_masks_filtered.nc')
+sweBC     = xr.open_dataarray(prepdir + 'snowmaxBC.nc')
 
-snotel_extrap       = xr.open_dataarray(input_folder_path + 'snotel_extrapolated.nc')
-cum_precip_all      = xr.open_dataarray(input_folder_path + 'cum_precipBC_SynthErr.nc')
-cum_precip_snow_all = xr.open_dataarray(input_folder_path + 'cum_precip_snowBC_SynthErr.nc')
-# cum_precip_all      = xr.open_dataarray(input_folder_path + 'cum_precipBC_SynthErrReduced.nc')
-# cum_precip_snow_all = xr.open_dataarray(input_folder_path + 'cum_precip_snowBC_SynthErrReduced.nc')
-seasonal_t2_all     = xr.open_dataarray(input_folder_path + 'seasonal_t2BC_SynthErr.nc')
-mean_fSCA_all       = xr.open_dataarray(input_folder_path + 'mean_fSCABC_SynthErr.nc')
-pdd_sum_all         = xr.open_dataarray(input_folder_path + 'pdd_sumBC_SynthErr.nc')
-aso_proxy_all       = xr.open_dataarray(input_folder_path + 'swe_apr1_SynthErr.nc')
+snotel_extrap       = xr.open_dataarray(prepdir + 'snotel_extrapolated.nc')
+cum_precip_all      = xr.open_dataarray(prepdir + 'cum_precipBC_SynthErr.nc')
+cum_precip_snow_all = xr.open_dataarray(prepdir + 'cum_precip_snowBC_SynthErr.nc')
+seasonal_t2_all     = xr.open_dataarray(prepdir + 'seasonal_t2BC_SynthErr.nc')
+mean_fSCA_all       = xr.open_dataarray(prepdir + 'mean_fSCABC_SynthErr.nc')
+pdd_sum_all         = xr.open_dataarray(prepdir + 'pdd_sumBC_SynthErr.nc')
+aso_proxy_all       = xr.open_dataarray(prepdir + 'swe_apr1_SynthErr.nc')
 
 ### Normalize dynamic vars
 snotel_extrap = np.log10(1+snotel_extrap)

@@ -153,6 +153,17 @@ def get_peak_date_amt(data):
         data={"maxval": maxvals, "maxdate": maxdates, "maxarg": maxargs}, index=wys
     )
     return metrics
+    
+def metaread_veg(dir_meta,domain):
+    file = "%swrfinput_%s" %(dir_meta,domain)
+    data = xr.open_dataset(file)
+    lat = data.variables["XLAT"][0,:,:]
+    lon = data.variables["XLONG"][0,:,:]
+    z = data.variables["HGT"][0,:,:]
+    vgtyp = data.variables["IVGTYP"][0,:,:] ## Table 2: IGBP-Modified MODIS 20-category Land Use Categories
+    vegfra = data.variables["VEGFRA"][0,:,:] ## Average canopy cover
+
+    return (lat,lon,z, vgtyp, vegfra)
 
 def metaread(dir_meta,domain):
     file = "%swrfinput_%s" %(dir_meta,domain)
@@ -161,6 +172,7 @@ def metaread(dir_meta,domain):
     lon = data.variables["XLONG"]
     z = data.variables["HGT"]
     return (lat,lon,z,file)
+    
 def read_wrf_meta_data(dir_meta: str, domain: str):
     """Read wrf meta data from nc4 files, and return lat, lon, height, and the filename"""
     infile = os.path.join(dir_meta, f"wrfinput_{domain}")
