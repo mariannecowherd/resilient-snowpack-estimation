@@ -1,8 +1,12 @@
 code/.ipynb_checkpoints/
+code/.ipynb_checkpoints
 data/tmp/
+data/tmp
 __pycache__/
 .ipynb_checkpoints/
 code/__pycache__/
 code/download_ucla.sh
+figures/.ipynb_checkpoints/
+figures/.ipynb_checkpoints
 *.pyc
 data/uclaSR/
