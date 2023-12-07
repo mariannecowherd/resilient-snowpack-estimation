@@ -12,7 +12,7 @@ The code folder contains python scripts and jupyter notebooks required to reprod
 To run your own distributed SWE predictions, use the files labeled with the relevant method -- linear regression, random forest, or U-Net -- and save the ouputs locally
 
 ### Notebooks
-`generate_tmpfiles.ipynb`: requires WUS-D3 and WUS-SR data
+`generate_tmpfiles.ipynb`: requires WUS-D3 and WUS-SR data \\ 
 `swe_Apr1_synthetic_error.ipynb`: requires WUS-D3 data; produces preprocessed synthetic error SWE observations for data group 3
 `Compare_GCM_PRISM.ipynb`: requires PRISM and WUS-D3 data; produces data group 2 and 3 input data
 `Combine_preds_Unet.ipynb`: requires outputs of `runmodels*`; produces 
