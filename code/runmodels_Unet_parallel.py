@@ -285,8 +285,8 @@ Data_5 = Data_4 + ['ASO-proxy']
 
 ## Specify folder path
 
-# dest_folder = '/pscratch/sd/u/umital/fate-of-snotels_output/Fig4_Unet_preds_test/'
-dest_folder = '/global/cfs/cdirs/m4099/fate-of-snotel/wrfdata/umital/Fig4_results/Fig4_Unet_preds_test/'
+dest_folder  = 'Fig4_Unet_preds_test/'
+
 
 if not os.path.isdir(dest_folder):
     os.mkdir(dest_folder)

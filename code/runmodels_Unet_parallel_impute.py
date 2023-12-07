@@ -1,7 +1,6 @@
 ## Objective
 ## Assemble predictors for various data combinations and train U-Net models
 
-
 import pandas as pd
 import xarray as xr
 import datetime
