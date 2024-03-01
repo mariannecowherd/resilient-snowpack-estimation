@@ -10,3 +10,6 @@ figures/.ipynb_checkpoints/
 figures/.ipynb_checkpoints
 *.pyc
 data/uclaSR/
+snowpillow_extrapolated.nc
+code/Fig4_LR_SynthErr_preds/
+code/Fig4_LR_SynthErr_preds
