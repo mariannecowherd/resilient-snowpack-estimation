@@ -1,3 +1,4 @@
+#!/bin/bash
 ## Objective
 ## Assemble predictors for various data combinations and train random forest models
 
@@ -22,7 +23,7 @@ masks     = xr.open_dataset(prepdir + 'basin_masks_filtered.nc')
 sweBC     = xr.open_dataarray(prepdir + 'snowmaxBC.nc')
 
 #snotel_extrap       = xr.open_dataarray(prepdir + 'snotel_extrapolated.nc')
-snotel_extrap       = xr.open_dataarray('../snowpillow_extrapolated.nc')
+snotel_extrap       = xr.open_dataarray(prepdir + 'allpillows_extrapolated.nc')
 cum_precip_all      = xr.open_dataarray(prepdir + 'cum_precipBC_SynthErr.nc')
 cum_precip_snow_all = xr.open_dataarray(prepdir + 'cum_precip_snowBC_SynthErr.nc')
 seasonal_t2_all     = xr.open_dataarray(prepdir + 'seasonal_t2BC_SynthErr.nc')
